@@ -73,7 +73,7 @@ func ServerConfigEth63_Default() p2p.Config {
 		Name:            "disco",
 		Protocols:       []p2p.Protocol{ProtocolEth63Disco()},
 		ListenAddr:      ":30301",
-		Logger:          log.New("srv"),
+		Logger:          log.Root(),
 		NodeDatabase:    "", // empty for memory
 	}
 }
