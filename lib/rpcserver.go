@@ -4,6 +4,7 @@ import (
 	"net"
 	"net/http"
 	"net/rpc"
+	"os"
 
 	"github.com/ethereum/go-ethereum/log"
 )
@@ -16,14 +17,19 @@ func Run() {
 	rpc.Register(ds)
 	rpc.HandleHTTP()
 
-	lg := log.New("rpcsrv")
-	listening, err := net.Listen("tcp", ":1234")
+	addr := ":8544"
+
+	lg := log.NewGlogHandler(log.StreamHandler(os.Stderr, log.TerminalFormat(false)))
+	lg.Verbosity(log.Lvl(9))
+	log.Root().SetHandler(lg)
+
+	listening, err := net.Listen("tcp", addr)
 	if err != nil {
-		lg.Crit("could not start listening", "error", err)
+		log.Crit("could not start listening", "error", err)
 	}
-	lg.Info("serving", "port", ":1234")
+	log.Info("serving", "addr", addr)
 	err = http.Serve(listening, nil)
 	if err != nil {
-		lg.Crit("could not serve http", "error", err)
+		log.Crit("could not serve http", "error", err)
 	}
 }
