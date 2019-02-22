@@ -21,11 +21,11 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ethereum.clean/eth"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/eth"
 	elog "github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/p2p"
 	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/ethoxy/multi-geth/crypto"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -36,19 +36,16 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "devp2ping",
-	Short: "Ping a given eth enode",
+	Short: "Ping an ethereum enode",
 	Long: `
-Run a p2p node and do basic discovery things with it over HTTP RPC
+    Spins up a memory-backed p2p server and attempts to make a very basic connection with an enode.
 `,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
 	Run: func(cmd *cobra.Command, args []string) {
 		log.SetFlags(0)
 		log.SetPrefix("")
 
 		lg := elog.NewGlogHandler(elog.StreamHandler(os.Stderr, elog.TerminalFormat(false)))
-		lg.Verbosity(elog.Lvl(100))
+		lg.Verbosity(elog.Lvl(11)) // turn it up to... #loud
 		elog.Root().SetHandler(lg)
 
 		if len(args) == 0 {
@@ -72,7 +69,7 @@ Run a p2p node and do basic discovery things with it over HTTP RPC
 			MaxPeers:        25,
 			MaxPendingPeers: 50,
 			NoDiscovery:     true,
-			Name:            "disco",
+			Name:            "devp2ping",
 			Protocols: []p2p.Protocol{p2p.Protocol{
 				Name:    eth.ProtocolName,
 				Version: eth.ProtocolVersions[0], // just eth/63 for now, no immediate need for backwards compat
@@ -145,7 +142,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.devp2p-disco.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.devp2ping")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -165,7 +162,7 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".devp2p-disco" (without extension).
+		// Search config in home directory with name ".devp2ping" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".devp2ping")
 	}

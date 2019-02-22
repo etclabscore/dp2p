@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/etclabscore/devp2p-disco/cmd"
+import "github.com/etclabscore/devp2ping/cmd"
 
 func main() {
 	cmd.Execute()
