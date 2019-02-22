@@ -35,7 +35,7 @@ var connectTimeout int
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "devp2ping",
+	Use:   "devp2ping <enode>",
 	Short: "Ping an ethereum enode",
 	Long: `
     Spins up a memory-backed p2p server and attempts to make a very basic connection with an enode.

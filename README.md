@@ -3,6 +3,21 @@
 $ go get github.com/etclabscore/devp2ping/...
 ```
 
+## Help
+
+```
+$ devp2ping -h
+
+    Spins up a memory-backed p2p server and attempts to make a very basic connection with an enode.
+
+Usage:
+  devp2ping <enode> [flags]
+
+Flags:
+  -h, --help          help for devp2ping
+  -t, --timeout int   time in seconds to wait for node to dial a connection (default 30)
+```
+
 ## Use
 
 ```
