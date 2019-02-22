@@ -2,6 +2,7 @@ package lib
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
@@ -25,7 +26,8 @@ var (
 
 type ArgsStart struct{}
 type RespStart struct {
-	Enode *enode.Node
+	Enode    *enode.Node
+	NodeInfo *p2p.NodeInfo
 }
 
 func (ds *DiscoP2PService) Start(args *ArgsStart, res *RespStart) error {
@@ -41,7 +43,8 @@ func (ds *DiscoP2PService) Start(args *ArgsStart, res *RespStart) error {
 		return err
 	}
 	res = &RespStart{
-		Enode: ds.Server.Self(),
+		Enode:    ds.Server.Self(),
+		NodeInfo: ds.Server.NodeInfo(),
 	}
 	if res.Enode == nil {
 		return errNoStart
@@ -72,29 +75,37 @@ func (ds *DiscoP2PService) AddPeer(args *ArgsAddPeer, res *RespAddPeer) error {
 		return err
 	}
 	log.Info("disco addPeer", "enode", en)
-	origPeerLen := len(ds.Server.Peers())
+	// origPeerLen := len(ds.Server.Peers())
 	ds.Server.AddPeer(en)
-	t := time.NewTicker(15 * time.Second)
-outer:
+	res = &RespAddPeer{Ok: true, Enode: en.String()}
+
+	t := time.NewTicker(15 * time.Second) // TODO flag me maybe?
 	for {
 		select {
 		case ev := <-ds.peerEventCh:
 			log.Info("ds server peer event", "event", ev)
-			break outer
+			switch ev.Type {
+			case p2p.PeerEventTypeAdd:
+				return nil
+			}
+			return fmt.Errorf("unwanted peer event: %v", ev)
 		case err := <-ds.ServerSub.Err():
+			res = &RespAddPeer{Ok: false, Enode: en.String()}
 			log.Crit("ds server error", "error", err)
 			return err
 		case <-t.C:
+			// could not connect to peer (timeout)
 			log.Warn("ticker ticked")
-			break outer
+			res = &RespAddPeer{Ok: false, Enode: en.String()}
+			return errors.New("failed to connect after 15 seconds")
 		}
 	}
-	newPeerLen := len(ds.Server.Peers())
-	log.Info("disco", "olen", origPeerLen, "nlen", newPeerLen, "server.peers", ds.Server.Peers())
-	if origPeerLen+1 != newPeerLen {
-		res = &RespAddPeer{Ok: false, Enode: en.String()}
-		// return errors.New("failed to add peer")
-	}
+	// newPeerLen := len(ds.Server.Peers())
+	// log.Info("disco", "olen", origPeerLen, "nlen", newPeerLen, "server.peers", ds.Server.Peers())
+	// if origPeerLen+1 != newPeerLen {
+	// 	res = &RespAddPeer{Ok: false, Enode: en.String()}
+	// 	return errors.New("failed to add peer")
+	// }
 
 	// peerEventCh := make(chan<- p2p.MeteredPeerEvent)
 	// sub := p2p.SubscribeMeteredPeerEvent(peerEventCh)
@@ -110,7 +121,21 @@ outer:
 	// }()
 	// sub.Err()
 
-	res = &RespAddPeer{Ok: true, Enode: en.String()}
+	return nil
+}
+
+type ArgsRemovePeer struct {
+	Enode string `json:"enode"`
+}
+type RespRemovePeer struct{}
+
+func (ds *DiscoP2PService) RemovePeer(args *ArgsRemovePeer, res *RespRemovePeer) error {
+	en, err := enode.ParseV4(args.Enode)
+	if err != nil {
+		return err
+	}
+	log.Info("disco removePeer", "enode", en)
+	ds.Server.RemovePeer(en)
 	return nil
 }
 
@@ -125,8 +150,7 @@ func ProtocolEth63Disco() p2p.Protocol {
 
 func ppfnHandler(peer *p2p.Peer, ws p2p.MsgReadWriter) error {
 	log.Info("disco handler", "peer", peer)
-	// for {
-	// }
+	time.Sleep(5 * time.Second)
 	return nil
 }
 
