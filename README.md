@@ -1,6 +1,8 @@
 dp2p
 
 
+This project uses go modules, which are only available >=go1.11. Use `GO111MODULE=on`.
+
 ```
-$ go get github.com/etclabscore/dp2p/cmd/...
+$ go install github.com/etclabscore/devp2ping/...
 ```
