@@ -10,7 +10,7 @@ import (
 func Run() {
 
 	lg := log.NewGlogHandler(log.StreamHandler(os.Stderr, log.TerminalFormat(false)))
-	lg.Verbosity(log.Lvl(9))
+	lg.Verbosity(log.Lvl(100))
 	log.Root().SetHandler(lg)
 
 	apis := []rpc.API{
