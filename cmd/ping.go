@@ -62,13 +62,12 @@ to quickly create a Cobra application.`,
 
 		c := lib.ServerConfigEth63_Default()
 		c.Protocols[0].Run = func(peer *p2p.Peer, ws p2p.MsgReadWriter) error {
-			log.Println(peer.Name())
-			log.Println(peer.ID())
-			log.Println(spew.Sdump(peer.Info()))
 			log.Println(peer.String())
-			resCh <- 0
-			time.Sleep(200 * time.Millisecond)
+			log.Println(spew.Sdump(peer.Info()))
 			peer.Disconnect(p2p.DiscQuitting)
+			resCh <- 0
+			// time.Sleep(200 * time.Millisecond)
+			// peer.Disconnect(p2p.DiscQuitting)
 			return nil
 		}
 
