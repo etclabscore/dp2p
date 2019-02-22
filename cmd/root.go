@@ -79,13 +79,11 @@ var rootCmd = &cobra.Command{
 					log.Println(spew.Sdump(peer.Info()))
 					peer.Disconnect(p2p.DiscQuitting)
 					resCh <- 0
-					// time.Sleep(200 * time.Millisecond)
-					// peer.Disconnect(p2p.DiscQuitting)
 					return nil
 				},
 			}},
 			ListenAddr:      ":30301",
-			Logger:          log.Root(),
+			Logger:          elog.Root(),
 			NodeDatabase:    "", // empty for memory
 			EnableMsgEvents: true,
 		}
@@ -96,6 +94,8 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		go func() {
+			// We can't listen for dial failures w/o too much hacking.
+			// So we just set a timeout to wait for a positive connection.
 			t := time.NewTicker(30 * time.Second)
 			defer serv.Stop()
 			for {
@@ -119,7 +119,12 @@ var rootCmd = &cobra.Command{
 		for {
 			select {
 			case c := <-resCh:
-				log.Println("got res", c)
+				log.Println("got res code", c)
+				if c == 0 {
+					log.Println("OK")
+				} else {
+					log.Println("FAIL")
+				}
 				quitCh <- true
 				os.Exit(c)
 			}
