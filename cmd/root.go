@@ -27,7 +27,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "devp2p-disco",
+	Use:   "devp2ping",
 	Short: "RPC tool for devp2p services",
 	Long: `
 Run a p2p node and do basic discovery things with it over HTTP RPC
@@ -74,7 +74,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".devp2p-disco" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".devp2p-disco")
+		viper.SetConfigName(".devp2ping")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
