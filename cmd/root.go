@@ -32,6 +32,7 @@ import (
 
 var cfgFile string
 var connectTimeout int
+var listenAddr string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -82,7 +83,7 @@ var rootCmd = &cobra.Command{
 					return nil
 				},
 			}},
-			ListenAddr:      ":30301",
+			ListenAddr:      listenAddr,
 			Logger:          elog.Root(),
 			NodeDatabase:    "", // empty for memory
 			EnableMsgEvents: true,
@@ -102,7 +103,7 @@ var rootCmd = &cobra.Command{
 				select {
 				case ev := <-pEventCh:
 					if ev.Type == p2p.PeerEventTypeAdd {
-						log.Println(ev)
+						// log.Println(ev)
 					}
 				case err := <-pSub.Err():
 					log.Println("peer event sub error", err)
@@ -119,11 +120,11 @@ var rootCmd = &cobra.Command{
 		for {
 			select {
 			case c := <-resCh:
-				log.Println("got res code", c)
+				// log.Println("got res code", c)
 				if c == 0 {
-					log.Println("OK")
+					fmt.Println("OK")
 				} else {
-					log.Println("FAIL")
+					fmt.Println("FAIL")
 				}
 				quitCh <- true
 				os.Exit(c)
@@ -144,6 +145,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().IntVarP(&connectTimeout, "timeout", "t", 30, "time in seconds to wait for node to dial a connection")
+	rootCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
