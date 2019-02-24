@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Checks bootnode(enode) reachability for networks supported by a geth client, eg. multi-geth.
-#
-# * Requires tool 'json' to be installed. Try 'npm install -g json-cli'.
+# Enodes are each pinged in their own processes, so this script should only take approximately as long as the
+# timeout limit to run.
 #
 # Use:
 #  cd $GOPATH/src/github.com/etclabscore/devp2ping &&
@@ -22,17 +22,10 @@ all_networks=(mainnet testnet classic social ethersocial mix rinkeby kotti goerl
 set -e
 
 
-# I think this is npm's json-cli
-# I'd prefer to use jj, but couldn't get it to do array->multi line quite as nicely.
-command -v json || { echo "Requires tool 'json' to be installed. Maybe try 'npm install -g json-cli'" && exit 1; }
-
-
 # Build executables geth and devp2ping, we'll remove them after use.
 curd="$(pwd)"
-pushd $GOPATH/src/github.com/ethereum/go-ethereum
-make all
-cp build/bin/geth $curd/geth
-popd
+pushd $GOPATH/src/github.com/ethereum/go-ethereum && make && cp ./build/bin/geth "$curd/geth" && popd
+unset curd
 go build -o devp2ping
 
 trap "rm geth devp2ping" EXIT # Remove executable bins on exit.
@@ -59,10 +52,10 @@ do
     [[ "$net" == mainnet ]] && nf=
 
     ./geth 2>/dev/null $nf dumpconfig |
-        egrep "^BootstrapNodes " |
-        cut -d'=' -f2 |
-        sed 's/^ //g' |
-        json -a |
+        grep -E "^BootstrapNodes " |
+        cut -d'=' -f2- |
+        sed 's/\[//g;s/\]//g;s/,/\n/g;s/"//g' |
+        sed 's/^ *//g' |
         tee "$data_dir/$net/bootnodes.list"
 
     ./geth version > "$data_dir/$net/geth.version" 2>&1
