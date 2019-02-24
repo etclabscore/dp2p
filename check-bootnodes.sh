@@ -88,3 +88,18 @@ for net in "${networks[@]}"; do
 done
 wait
 
+echo Done
+echo
+echo Outcomes:
+for d in $data_dir/*; do
+    echo
+    # set -x
+    # cat "$d/outcomes"
+    # set +x
+    echo "$d"
+
+    oks=$(cat "$d/outcomes" | grep '^0' | wc -l)
+    fails=$(cat "$d/outcomes" | grep '^1' | wc -l)
+    echo -e "\tok=$oks"
+    echo -e "\tfails=$fails"
+done
