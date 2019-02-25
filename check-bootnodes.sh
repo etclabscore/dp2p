@@ -11,10 +11,8 @@
 # If no network names are passed, then all available are used.
 # - See 'data_dir' var below if you want to change where resulting data goes.
 # - See 'timeout_lim' var if you want to change how long (in seconds) before ping attempt resigns.
-# - See 'base_addr' for floor udp port for ping/discovery listen addresses. Currently, only local ports are supported.
 
 timeout_lim=$((60*60)) # m * n_seconds
-base_addr=30300
 data_dir="data/$(date +%s)-${timeout_lim}s"
 all_networks=(mainnet testnet classic social ethersocial mix rinkeby kotti goerli)
 
@@ -51,6 +49,8 @@ do
     nf="--$net"
     [[ "$net" == mainnet ]] && nf=
 
+    ./geth version > "$data_dir/$net/geth.version" 2>&1
+
     ./geth 2>/dev/null $nf dumpconfig |
         grep -E "^BootstrapNodes " |
         cut -d'=' -f2- |
@@ -58,48 +58,32 @@ do
         sed 's/^ *//g' |
         tee "$data_dir/$net/bootnodes.list"
 
-    ./geth version > "$data_dir/$net/geth.version" 2>&1
-
-    [[ "$(wc -l < $data_dir/$net/bootnodes.list)" -eq 0 ]] && echo "$net: no bootnodes" && exit 1
-done
-
-# Run ping attempts for each enode for each network.
-# Note that subshells are spawned for each net, then each enode.
-# Subshells are not disowned, and we wait for them all to exit.
-for net in "${networks[@]}"; do
-    echo "Running chain: $net"
-    base_addr=$((base_addr+20))
-    (
-        while read enode; do
-            base_addr=$((base_addr+1))
+    while read -r enode; do
             enode_id="$(echo $enode | cut -d'/' -f2- | cut -d '@' -f1)"
             (
                 set +e # Must allow devp2ping to 'fail', ie exit w/ 1
                 echo "Running $net $enode"
                 start="$(date +%s)"
-                ./devp2ping -a ":$base_addr" -t $timeout_lim "$enode" > "$data_dir/$net$enode_id.log" 2>&1
+                # Python here asks the OS for an open port on the machine.
+                ./devp2ping -a ":$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')" -t $timeout_lim "$enode" > "$data_dir/$net$enode_id.log" 2>&1
                 res="$?"
                 end="$(date +%s)"
                 echo "$res $net-$enode "'('$((end-start))'s)' >> "$data_dir/$net/outcomes"
             )&
-        done < "$data_dir/$net/bootnodes.list"
-        wait
-    )&
+    done < "$data_dir/$net/bootnodes.list"
 done
+
+js="$(jobs -p)"
+echo "Backgrounded jobs numberof=$(wc -l <<< $js)"
+echo "Backgrounded jobs pids=[ $(printf '%s ' $js)]"
+
 wait
 
 echo Done
 echo
 echo Outcomes:
 for d in $data_dir/*; do
-    echo
-    # set -x
-    # cat "$d/outcomes"
-    # set +x
-    echo "$d"
-
     oks=$(cat "$d/outcomes" | grep '^0' | wc -l)
     fails=$(cat "$d/outcomes" | grep '^1' | wc -l)
-    echo -e "\tok=$oks"
-    echo -e "\tfails=$fails"
+    echo -e "$d\tok=$oks\tfails=$fails"
 done
