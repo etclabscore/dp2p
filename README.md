@@ -14,17 +14,18 @@ Usage:
   devp2ping <enode> [flags]
 
 Flags:
-  -h, --help          help for devp2ping
-  -t, --timeout int   time in seconds to wait for node to dial a connection (default 30)
+  -h, --help                help for devp2ping
+  -a, --listenaddr string   address:port to listen at (default ":30301")
+  -t, --timeout int         time in seconds to wait for node to dial a connection (default 30)
 ```
 
 ## Use
 
 ```
-$ devp2ping enode://66498ac935f3f54d873de4719bf2d6d61e0c74dd173b547531325bcef331480f9bedece91099810971c8567eeb1ae9f6954b013c47c6dc51355bbbbae65a8c16@54.148.165.1:30303
+$ devp2ping -a ':30301' -t $((60*60)) enode://66498ac935f3f54d873de4719bf2d6d61e0c74dd173b547531325bcef331480f9bedece91099810971c8567eeb1ae9f6954b013c47c6dc51355bbbbae65a8c16@54.148.165.1:30303
 ```
 
-Returns exit code `0` if successful, `1` if failed.
+Returns exit code `0` if successful, `1` if failed.  Will print all logs available from the go-ethereum `p2p` library in use. As with the go-ethereum client, these go to stderr. 
 
 #### Check default go-ethereum/multi-geth bootnodes
 
