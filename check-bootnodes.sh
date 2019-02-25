@@ -59,17 +59,17 @@ do
         tee "$data_dir/$net/bootnodes.list"
 
     while read -r enode; do
-            enode_id="$(echo $enode | cut -d'/' -f2- | cut -d '@' -f1)"
-            (
-                set +e # Must allow devp2ping to 'fail', ie exit w/ 1
-                echo "Running $net $enode"
-                start="$(date +%s)"
-                # Python here asks the OS for an open port on the machine.
-                ./devp2ping -a ":$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')" -t $timeout_lim "$enode" > "$data_dir/$net$enode_id.log" 2>&1
-                res="$?"
-                end="$(date +%s)"
-                echo "$res $net-$enode "'('$((end-start))'s)' >> "$data_dir/$net/outcomes"
-            )&
+        enode_id="$(echo $enode | cut -d'/' -f2- | cut -d '@' -f1)"
+        (
+            set +e # Must allow devp2ping to 'fail', ie exit w/ 1
+            echo "Running $net $enode"
+            start="$(date +%s)"
+            # Python here asks the OS for an open port on the machine.
+            ./devp2ping -a ":$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')" -t $timeout_lim "$enode" > "$data_dir/$net$enode_id.log" 2>&1
+            res="$?"
+            end="$(date +%s)"
+            echo "$res $net-$enode "'('$((end-start))'s)' >> "$data_dir/$net/outcomes"
+        )&
     done < "$data_dir/$net/bootnodes.list"
 done
 
