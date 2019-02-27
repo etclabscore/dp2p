@@ -65,7 +65,7 @@ do
             echo "Running $net $enode"
             start="$(date +%s)"
             # Python here asks the OS for an open port on the machine.
-            ./dp2p ping -a ":$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')" -t $timeout_lim "$enode" > "$data_dir/$net$enode_id.log" 2>&1
+            ./dp2p addpeer -a ":$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')" -t $timeout_lim "$enode" > "$data_dir/$net$enode_id.log" 2>&1
             res="$?"
             end="$(date +%s)"
             echo "$res $net-$enode "'('$((end-start))'s)' >> "$data_dir/$net/outcomes"
