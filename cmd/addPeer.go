@@ -32,10 +32,11 @@ import (
 var connectTimeout int
 var listenAddr string
 
-// pingCmd represents the ping command
-var pingCmd = &cobra.Command{
-	Use:   "ping <enode>",
-	Short: "Ping an ethereum enode",
+// addPeerCmd represents the addPeer command
+var addPeerCmd = &cobra.Command{
+	Aliases: []string{"addPeer"},
+	Use:     "addpeer <enode>",
+	Short:   "Add an ethereum enode as a peer",
 	Long: `
     Spins up a memory-backed p2p server and attempts to make a very basic connection with an enode.
 `,
@@ -132,18 +133,18 @@ var pingCmd = &cobra.Command{
 }
 
 func init() {
-	pingCmd.PersistentFlags().IntVarP(&connectTimeout, "timeout", "t", 30, "time in seconds to wait for node to dial a connection")
-	pingCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
+	addPeerCmd.PersistentFlags().IntVarP(&connectTimeout, "timeout", "t", 30, "time in seconds to wait for node to dial a connection")
+	addPeerCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
 
-	rootCmd.AddCommand(pingCmd)
+	rootCmd.AddCommand(addPeerCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// pingCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// addPeerCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// pingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// addPeerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
