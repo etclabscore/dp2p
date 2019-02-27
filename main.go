@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/etclabscore/devp2ping/cmd"
+import "github.com/etclabscore/dp2p/cmd"
 
 func main() {
 	cmd.Execute()

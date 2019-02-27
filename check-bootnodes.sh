@@ -5,7 +5,7 @@
 # timeout limit to run.
 #
 # Use:
-#  cd $GOPATH/src/github.com/etclabscore/devp2ping &&
+#  cd $GOPATH/src/github.com/etclabscore/dp2p &&
 #  ./check-bootnodes.sh [|network names...]
 #
 # If no network names are passed, then all available are used.
@@ -20,13 +20,13 @@ all_networks=(mainnet testnet classic social ethersocial mix rinkeby kotti goerl
 set -e
 
 
-# Build executables geth and devp2ping, we'll remove them after use.
+# Build executables geth and dp2p, we'll remove them after use.
 curd="$(pwd)"
 pushd $GOPATH/src/github.com/ethereum/go-ethereum && make && cp ./build/bin/geth "$curd/geth" && popd
 unset curd
-go build -o devp2ping
+go build -o dp2p
 
-trap "rm geth devp2ping" EXIT # Remove executable bins on exit.
+trap "rm geth dp2p" EXIT # Remove executable bins on exit.
 
 mkdir -p "$data_dir"
 
@@ -61,11 +61,11 @@ do
     while read -r enode; do
         enode_id="$(echo $enode | cut -d'/' -f2- | cut -d '@' -f1)"
         (
-            set +e # Must allow devp2ping to 'fail', ie exit w/ 1
+            set +e # Must allow dp2p to 'fail', ie exit w/ 1
             echo "Running $net $enode"
             start="$(date +%s)"
             # Python here asks the OS for an open port on the machine.
-            ./devp2ping -a ":$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')" -t $timeout_lim "$enode" > "$data_dir/$net$enode_id.log" 2>&1
+            ./dp2p -a ":$(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()')" -t $timeout_lim "$enode" > "$data_dir/$net$enode_id.log" 2>&1
             res="$?"
             end="$(date +%s)"
             echo "$res $net-$enode "'('$((end-start))'s)' >> "$data_dir/$net/outcomes"

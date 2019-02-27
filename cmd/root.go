@@ -36,7 +36,7 @@ var listenAddr string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "devp2ping <enode>",
+	Use:   "dp2p <enode>",
 	Short: "Ping an ethereum enode",
 	Long: `
     Spins up a memory-backed p2p server and attempts to make a very basic connection with an enode.
@@ -70,7 +70,7 @@ var rootCmd = &cobra.Command{
 			MaxPeers:        25,
 			MaxPendingPeers: 50,
 			NoDiscovery:     true,
-			Name:            "devp2ping",
+			Name:            "dp2p",
 			Protocols: []p2p.Protocol{p2p.Protocol{
 				Name:    eth.ProtocolName,
 				Version: eth.ProtocolVersions[0], // just eth/63 for now, no immediate need for backwards compat
@@ -150,7 +150,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.devp2ping")
+	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.dp2p")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -170,9 +170,9 @@ func initConfig() {
 	// 		os.Exit(1)
 	// 	}
 
-	// 	// Search config in home directory with name ".devp2ping" (without extension).
+	// 	// Search config in home directory with name ".dp2p" (without extension).
 	// 	viper.AddConfigPath(home)
-	// 	viper.SetConfigName(".devp2ping")
+	// 	viper.SetConfigName(".dp2p")
 	// }
 
 	viper.AutomaticEnv() // read in environment variables that match
