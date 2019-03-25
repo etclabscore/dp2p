@@ -59,7 +59,7 @@ type udpTest struct {
 	pipe                *dgramPipe
 	table               *Table
 	db                  *enode.DB
-	udp                 *udp
+	udp                 *Udp
 	sent                [][]byte
 	localkey, remotekey *ecdsa.PrivateKey
 	remoteaddr          *net.UDPAddr
@@ -174,7 +174,7 @@ func TestUDP_responseTimeouts(t *testing.T) {
 		timeoutErr = make(chan error, nReqs) // for requests that time out
 	)
 	for i := 0; i < nReqs; i++ {
-		// Create a matcher for a random request in udp.loop. Requests
+		// Create a matcher for a random request in Udp.loop. Requests
 		// with ptype <= 128 will not get a reply and should time out.
 		// For all other requests, a reply is scheduled to arrive
 		// within the timeout window.

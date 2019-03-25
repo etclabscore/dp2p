@@ -64,7 +64,7 @@ func checkClockDrift() {
 // ones to be able to discard the two extremes as outliers.
 func sntpDrift(measurements int) (time.Duration, error) {
 	// Resolve the address of the NTP server
-	addr, err := net.ResolveUDPAddr("udp", ntpPool+":123")
+	addr, err := net.ResolveUDPAddr("Udp", ntpPool+":123")
 	if err != nil {
 		return 0, err
 	}
@@ -78,7 +78,7 @@ func sntpDrift(measurements int) (time.Duration, error) {
 	drifts := []time.Duration{}
 	for i := 0; i < measurements+2; i++ {
 		// Dial the NTP server and send the time retrieval request
-		conn, err := net.DialUDP("udp", nil, addr)
+		conn, err := net.DialUDP("Udp", nil, addr)
 		if err != nil {
 			return 0, err
 		}
