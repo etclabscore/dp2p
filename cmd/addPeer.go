@@ -61,8 +61,6 @@ var addPeerCmd = &cobra.Command{
 
 					// eth/handler.go#handle -> peer.Handshake(network,td, head, genesis)
 
-
-
 					peer.Disconnect(p2p.DiscQuitting)
 					resCh <- 0
 					return nil
