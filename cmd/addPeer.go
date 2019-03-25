@@ -77,6 +77,11 @@ var addPeerCmd = &cobra.Command{
 				Run: func(peer *p2p.Peer, ws p2p.MsgReadWriter) error {
 					log.Println(peer.String())
 					log.Println(spew.Sdump(peer.Info()))
+
+					// eth/handler.go#handle -> peer.Handshake(network,td, head, genesis)
+
+
+
 					peer.Disconnect(p2p.DiscQuitting)
 					resCh <- 0
 					return nil
