@@ -331,6 +331,10 @@ func (t *Udp) sendPing(toid enode.ID, toaddr *net.UDPAddr, callback func()) <-ch
 	return errc
 }
 
+func (t *Udp) SendPing(toid enode.ID, toaddr *net.UDPAddr, callback func()) <-chan error {
+	return t.sendPing(toid, toaddr, callback)
+}
+
 // findnode sends a findnode request to the given node and waits until
 // the node has sent up to k neighbors.
 func (t *Udp) findnode(toid enode.ID, toaddr *net.UDPAddr, target encPubkey) ([]*node, error) {
