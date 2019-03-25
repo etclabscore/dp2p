@@ -21,9 +21,9 @@ import (
 	"net"
 )
 
-// neighborsCmd represents the neighbors command
-var neighborsCmd = &cobra.Command{
-	Use:   "neighbors",
+// findnodeCmd represents the neighbors command
+var findnodeCmd = &cobra.Command{
+	Use:   "findnode",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -50,16 +50,16 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	neighborsCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
-	rootCmd.AddCommand(neighborsCmd)
+	findnodeCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
+	rootCmd.AddCommand(findnodeCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// neighborsCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// findnodeCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// neighborsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// findnodeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
