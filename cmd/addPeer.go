@@ -25,12 +25,8 @@ import (
 	"github.com/ethereum/go-ethereum/eth"
 	elog "github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/enode"
 	"github.com/spf13/cobra"
 )
-
-var connectTimeout int
-var listenAddr string
 
 // addPeerCmd represents the addPeer command
 var addPeerCmd = &cobra.Command{
@@ -41,23 +37,8 @@ var addPeerCmd = &cobra.Command{
     Spins up a memory-backed p2p server and attempts to make a very basic connection with an enode.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.SetFlags(0)
-		log.SetPrefix("")
 
-		lg := elog.NewGlogHandler(elog.StreamHandler(os.Stderr, elog.TerminalFormat(false)))
-		lg.Verbosity(elog.Lvl(11)) // turn it up to... #loud
-		elog.Root().SetHandler(lg)
-
-		if len(args) == 0 {
-			log.Println("need enode as first argument")
-			os.Exit(1)
-		}
-		eni := args[0]
-		en, err := enode.ParseV4(eni)
-		if err != nil {
-			log.Println("malformed enode", eni)
-			os.Exit(1)
-		}
+		en := mustEnodeArg(args)
 
 		pEventCh := make(chan *p2p.PeerEvent)
 		resCh := make(chan int)
@@ -77,6 +58,9 @@ var addPeerCmd = &cobra.Command{
 				Run: func(peer *p2p.Peer, ws p2p.MsgReadWriter) error {
 					log.Println(peer.String())
 					log.Println(spew.Sdump(peer.Info()))
+
+					// eth/handler.go#handle -> peer.Handshake(network,td, head, genesis)
+
 					peer.Disconnect(p2p.DiscQuitting)
 					resCh <- 0
 					return nil
