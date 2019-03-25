@@ -16,10 +16,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/etclabscore/dp2p/discover"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/p2p/enode"
 	"github.com/spf13/cobra"
 	"log"
 	"net"
@@ -39,32 +35,13 @@ to quickly create a Cobra application.`,
 
 		en := mustEnodeArg(args)
 
-		nodeKey, _ := crypto.GenerateKey()
+		u := mustUdp()
 
-		addr, err := net.ResolveUDPAddr("udp", listenAddr)
-		if err != nil {
-			utils.Fatalf("-ResolveUDPAddr: %v", err)
-		}
-		conn, err := net.ListenUDP("udp", addr)
-		if err != nil {
-			utils.Fatalf("-ListenUDP: %v", err)
-		}
-
-		db, _ := enode.OpenDB("")
-		ln := enode.NewLocalNode(db, nodeKey)
-		cfg := discover.Config{
-			PrivateKey:  nodeKey,
-			//NetRestrict: restrictList,
-		}
-		_, u, err := discover.ListenUDP(conn, ln, cfg)
-		if err != nil {
-			utils.Fatalf("%v", err)
-		}
 		nodes, err := u.Findnode(en.ID(), &net.UDPAddr{IP: en.IP(), Port: en.UDP()}, en.Pubkey())
-
 		if err != nil {
 			log.Fatalln(err)
 		}
+
 		log.Println("got neighbors ok:", len(nodes))
 		for _, n := range nodes {
 			fmt.Println(n.String())
@@ -74,7 +51,6 @@ to quickly create a Cobra application.`,
 
 func init() {
 	neighborsCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
-
 	rootCmd.AddCommand(neighborsCmd)
 
 	// Here you will define your flags and configuration settings.
