@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:e92f5581902c345eb4ceffdcd4a854fb8f73cf436d47d837d1ec98ef1fe0a214"
+  name = "github.com/StackExchange/wmi"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5d049714c4a64225c3c79a7cf7d02f7fb5b96338"
+  version = "1.0.0"
+
+[[projects]]
   branch = "master"
   digest = "1:e574dab86697e4e3a8e2e815e0e932cfbf3618e74d6379d8732b33757e11b23d"
   name = "github.com/allegro/bigcache"
@@ -49,7 +57,18 @@
   revision = "935e0e8a636ca4ba70b713f3e38a19e1b77739e8"
 
 [[projects]]
-  digest = "1:e33cc24f229689f09aa34d64d293d53b1847096bf663ab03fabfe28b4e824aed"
+  digest = "1:b496535c6fc37def3b30f6af01b432b4d7b713ff5d28dfdc87072fb11452b0e0"
+  name = "github.com/elastic/gosigar"
+  packages = [
+    ".",
+    "sys/windows",
+  ]
+  pruneopts = "UT"
+  revision = "f2a90fc413720c43da9c4fe1a47513c73f45ac3d"
+  version = "v0.10.0"
+
+[[projects]]
+  digest = "1:c8c090bdd33d05a31959e8908086da611c52c6fc39dc0875a2abe60b303a0cce"
   name = "github.com/ethereum/go-ethereum"
   packages = [
     ".",
@@ -57,6 +76,7 @@
     "accounts/keystore",
     "accounts/usbwallet",
     "accounts/usbwallet/internal/trezor",
+    "cmd/utils",
     "common",
     "common/bitutil",
     "common/fdlimit",
@@ -80,6 +100,7 @@
     "crypto/bn256/google",
     "crypto/ecies",
     "crypto/secp256k1",
+    "dashboard",
     "eth",
     "eth/downloader",
     "eth/fetcher",
@@ -88,12 +109,17 @@
     "eth/tracers",
     "eth/tracers/internal/tracers",
     "ethdb",
+    "ethstats",
     "event",
     "internal/debug",
     "internal/ethapi",
+    "les",
+    "les/flowcontrol",
+    "light",
     "log",
     "metrics",
     "metrics/exp",
+    "metrics/influxdb",
     "miner",
     "node",
     "p2p",
@@ -107,6 +133,7 @@
     "rlp",
     "rpc",
     "trie",
+    "whisper/whisperv6",
   ]
   pruneopts = "UT"
   revision = "c942700427557e3ff6de3aaf6b916e2f056c1ec2"
@@ -129,6 +156,17 @@
   pruneopts = "UT"
   revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
   version = "v1.4.7"
+
+[[projects]]
+  digest = "1:440028f55cb322d8cb5b9d5ebec298a00b7d74690a658fe6b1c0c0b44341bfae"
+  name = "github.com/go-ole/go-ole"
+  packages = [
+    ".",
+    "oleutil",
+  ]
+  pruneopts = "UT"
+  revision = "97b6244175ae18ea6eef668034fd6565847501c9"
+  version = "v1.2.4"
 
 [[projects]]
   digest = "1:33542eaf895b5489ccfb059502a721f0e8875379da8b3ff60fdd9212d503705c"
@@ -208,6 +246,28 @@
   version = "v1.0"
 
 [[projects]]
+  digest = "1:23d36c19318407a4c60ff8f586c29ce28d50a6e92f6387eff1adada09edfd0f0"
+  name = "github.com/influxdata/influxdb"
+  packages = [
+    "client",
+    "models",
+    "pkg/escape",
+  ]
+  pruneopts = "UT"
+  revision = "ef77e72f435b71b1ad6da7d6a6a4c4a262439379"
+  version = "v1.7.4"
+
+[[projects]]
+  digest = "1:937258f1293bc9295b4789b0abea5b4ec030e3caecb65a4e1dc0b6999957a5ed"
+  name = "github.com/influxdata/platform"
+  packages = [
+    "models",
+    "pkg/escape",
+  ]
+  pruneopts = "UT"
+  revision = "0f79e4ea3248354c789cba274542e0a8e55971db"
+
+[[projects]]
   digest = "1:5314fcaf8f5945704c768b4664b75ff2d3e99fe9b6ec7d20151696874574100d"
   name = "github.com/jackpal/go-nat-pmp"
   packages = ["."]
@@ -246,20 +306,20 @@
   revision = "3fb116b820352b7f0c281308a4d6250c22d94e27"
 
 [[projects]]
-  digest = "1:5d231480e1c64a726869bc4142d270184c419749d34f167646baa21008eb0a79"
-  name = "github.com/mitchellh/go-homedir"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "af06845cf3004701891bf4fdb884bfe4920b3727"
-  version = "v1.1.0"
-
-[[projects]]
   digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
   pruneopts = "UT"
   revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
   version = "v1.1.2"
+
+[[projects]]
+  branch = "master"
+  digest = "1:84bd7f8a2e0bcd53ddc33c3b47c34c1fe340c8632cbe928f7f8ae10ec6ecdd62"
+  name = "github.com/mohae/deepcopy"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c48cc78d482608239f6c4c92a4abd87eb8761c90"
 
 [[projects]]
   digest = "1:361de06aa7ae272616cbe71c3994a654cc6316324e30998e650f7765b20c5b33"
@@ -275,6 +335,14 @@
   pruneopts = "UT"
   revision = "c01d1270ff3e442a8a57cddc1c92dc1138598194"
   version = "v1.2.0"
+
+[[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
 
 [[projects]]
   digest = "1:4383581ddbe6222608bc0a2073c716deeb43293657e502a6b87fc37258521a51"
@@ -404,11 +472,20 @@
   revision = "a6577fac2d73be281a500b310739095313165611"
 
 [[projects]]
-  digest = "1:f6e00d24bb12c4088d58e2c6af346f5efdff1b000151bb1d3d3d87371854b1f8"
+  branch = "master"
+  digest = "1:9f303486d623f840492bfeb48eb906a94e9d3fe638a761639b72ce64bf7bfcc3"
+  name = "golang.org/x/sync"
+  packages = ["syncmap"]
+  pruneopts = "UT"
+  revision = "e225da77a7e68af35c70ccbf71af2b83e6acac3c"
+
+[[projects]]
+  digest = "1:1944f19af443a7f96d3cb426df5bf08450d915e0fb9259c94f8a8f2e2dbcf339"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
     "unix",
+    "windows",
   ]
   pruneopts = "UT"
   revision = "e77772198cdc3dbfcf7f2de96630204df9fd3a0b"
@@ -478,12 +555,18 @@
   analyzer-version = 1
   input-imports = [
     "github.com/davecgh/go-spew/spew",
+    "github.com/ethereum/go-ethereum/cmd/utils",
+    "github.com/ethereum/go-ethereum/common",
+    "github.com/ethereum/go-ethereum/common/math",
     "github.com/ethereum/go-ethereum/crypto",
+    "github.com/ethereum/go-ethereum/crypto/secp256k1",
     "github.com/ethereum/go-ethereum/eth",
     "github.com/ethereum/go-ethereum/log",
     "github.com/ethereum/go-ethereum/p2p",
     "github.com/ethereum/go-ethereum/p2p/enode",
-    "github.com/mitchellh/go-homedir",
+    "github.com/ethereum/go-ethereum/p2p/enr",
+    "github.com/ethereum/go-ethereum/p2p/netutil",
+    "github.com/ethereum/go-ethereum/rlp",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
   ]
