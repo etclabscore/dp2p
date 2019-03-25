@@ -355,6 +355,7 @@ func (t *udp) findnode(toid enode.ID, toaddr *net.UDPAddr, target encPubkey) ([]
 				log.Trace("Invalid neighbor node received", "ip", rn.IP, "addr", toaddr, "err", err)
 				continue
 			}
+			log.Info("Neighbor", "n", n.String())
 			nodes = append(nodes, n)
 		}
 		return true, nreceived >= bucketSize
