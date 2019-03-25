@@ -367,6 +367,11 @@ func (t *Udp) findnode(toid enode.ID, toaddr *net.UDPAddr, target encPubkey) ([]
 	return nodes, <-errc
 }
 
+func (t *Udp) Findnode(toid  enode.ID, toaddr *net.UDPAddr, key *ecdsa.PublicKey) ([]*node, error) {
+	target := encodePubkey(key)
+	return t.findnode(toid, toaddr, target)
+}
+
 // pending adds a reply matcher to the pending reply queue.
 // see the documentation of type replyMatcher for a detailed explanation.
 func (t *Udp) pending(id enode.ID, ip net.IP, ptype byte, callback replyMatchFunc) <-chan error {

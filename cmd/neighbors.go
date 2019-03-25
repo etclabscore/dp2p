@@ -68,10 +68,19 @@ to quickly create a Cobra application.`,
 			PrivateKey:  nodeKey,
 			//NetRestrict: restrictList,
 		}
-		if _, err := discover.ListenUDP(conn, ln, cfg); err != nil {
+		_, u, err := discover.ListenUDP(conn, ln, cfg)
+		if err != nil {
 			utils.Fatalf("%v", err)
 		}
+		nodes, err := u.Findnode(en.ID(), &net.UDPAddr{IP: en.IP(), Port: en.UDP()}, en.Pubkey())
 
+		if err != nil {
+			log.Fatalln(err)
+		}
+		log.Println("got nodes ok:", len(nodes))
+		for _, n := range nodes {
+			log.Println("node", n.String())
+		}
 	},
 }
 
