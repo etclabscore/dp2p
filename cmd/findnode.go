@@ -41,8 +41,7 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			log.Fatalln(err)
 		}
-
-		log.Println("got neighbors ok:", len(nodes))
+		
 		for _, n := range nodes {
 			fmt.Println(n.String())
 		}
