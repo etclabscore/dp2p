@@ -29,9 +29,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var connectTimeout int
-var listenAddr string
-
 // addPeerCmd represents the addPeer command
 var addPeerCmd = &cobra.Command{
 	Aliases: []string{"addPeer"},
@@ -41,12 +38,6 @@ var addPeerCmd = &cobra.Command{
     Spins up a memory-backed p2p server and attempts to make a very basic connection with an enode.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.SetFlags(0)
-		log.SetPrefix("")
-
-		lg := elog.NewGlogHandler(elog.StreamHandler(os.Stderr, elog.TerminalFormat(false)))
-		lg.Verbosity(elog.Lvl(11)) // turn it up to... #loud
-		elog.Root().SetHandler(lg)
 
 		if len(args) == 0 {
 			log.Println("need enode as first argument")

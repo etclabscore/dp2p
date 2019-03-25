@@ -16,6 +16,13 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/cmd/utils"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/p2p/enode"
+	"github.com/etclabscore/dp2p/discover"
+	"log"
+	"net"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -32,10 +39,45 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("neighbors called")
+
+		if len(args) == 0 {
+			log.Println("need enode as first argument")
+			os.Exit(1)
+		}
+		eni := args[0]
+		en, err := enode.ParseV4(eni)
+		if err != nil {
+			log.Println("malformed enode", eni)
+			os.Exit(1)
+		}
+
+		nodeKey, _ := crypto.GenerateKey()
+
+		addr, err := net.ResolveUDPAddr("udp", listenAddr)
+		if err != nil {
+			utils.Fatalf("-ResolveUDPAddr: %v", err)
+		}
+		conn, err := net.ListenUDP("udp", addr)
+		if err != nil {
+			utils.Fatalf("-ListenUDP: %v", err)
+		}
+
+		db, _ := enode.OpenDB("")
+		ln := enode.NewLocalNode(db, nodeKey)
+		cfg := discover.Config{
+			PrivateKey:  nodeKey,
+			//NetRestrict: restrictList,
+		}
+		if _, err := discover.ListenUDP(conn, ln, cfg); err != nil {
+			utils.Fatalf("%v", err)
+		}
+
 	},
 }
 
 func init() {
+	neighborsCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
+
 	rootCmd.AddCommand(neighborsCmd)
 
 	// Here you will define your flags and configuration settings.

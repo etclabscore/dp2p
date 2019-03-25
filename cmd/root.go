@@ -16,13 +16,18 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	elog "github.com/ethereum/go-ethereum/log"
 )
 
 var cfgFile string
+
+var connectTimeout int
+var listenAddr string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -44,6 +49,14 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	log.SetFlags(0)
+	log.SetPrefix("")
+
+	lg := elog.NewGlogHandler(elog.StreamHandler(os.Stderr, elog.TerminalFormat(false)))
+	lg.Verbosity(elog.Lvl(11)) // turn it up to... #loud
+	elog.Root().SetHandler(lg)
+
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
