@@ -25,7 +25,6 @@ import (
 	"github.com/ethereum/go-ethereum/eth"
 	elog "github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/enode"
 	"github.com/spf13/cobra"
 )
 
@@ -39,16 +38,7 @@ var addPeerCmd = &cobra.Command{
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if len(args) == 0 {
-			log.Println("need enode as first argument")
-			os.Exit(1)
-		}
-		eni := args[0]
-		en, err := enode.ParseV4(eni)
-		if err != nil {
-			log.Println("malformed enode", eni)
-			os.Exit(1)
-		}
+		en := mustEnodeArg(args)
 
 		pEventCh := make(chan *p2p.PeerEvent)
 		resCh := make(chan int)

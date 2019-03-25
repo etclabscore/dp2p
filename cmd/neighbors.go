@@ -16,15 +16,13 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/etclabscore/dp2p/discover"
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/p2p/enode"
-	"github.com/etclabscore/dp2p/discover"
+	"github.com/spf13/cobra"
 	"log"
 	"net"
-	"os"
-
-	"github.com/spf13/cobra"
 )
 
 // neighborsCmd represents the neighbors command
@@ -38,18 +36,8 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("neighbors called")
 
-		if len(args) == 0 {
-			log.Println("need enode as first argument")
-			os.Exit(1)
-		}
-		eni := args[0]
-		en, err := enode.ParseV4(eni)
-		if err != nil {
-			log.Println("malformed enode", eni)
-			os.Exit(1)
-		}
+		en := mustEnodeArg(args)
 
 		nodeKey, _ := crypto.GenerateKey()
 
@@ -77,9 +65,9 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			log.Fatalln(err)
 		}
-		log.Println("got nodes ok:", len(nodes))
+		log.Println("got neighbors ok:", len(nodes))
 		for _, n := range nodes {
-			log.Println("node", n.String())
+			fmt.Println(n.String())
 		}
 	},
 }
