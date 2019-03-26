@@ -465,7 +465,9 @@ func (t *Udp) loop() {
 			var matched bool // whether any replyMatcher considered the reply acceptable.
 			for el := plist.Front(); el != nil; el = el.Next() {
 				p := el.Value.(*replyMatcher)
-				if p.from == r.from && p.ptype == r.ptype && p.ip.Equal(r.ip) {
+				// Don't check the ID equivalence because we may not be going thru the normal table
+				// motions, and the node may have a new key other than we have as last reported.
+				if p.ptype == r.ptype && p.ip.Equal(r.ip) {
 					ok, requestDone := p.callback(r.data)
 					matched = matched || ok
 					// Remove the matcher if callback indicates that all replies have been received.
