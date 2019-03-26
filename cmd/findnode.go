@@ -16,9 +16,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/etclabscore/dp2p/discover"
 	"github.com/spf13/cobra"
 	"log"
 	"net"
+	"time"
 )
 
 // findnodeCmd represents the neighbors command
@@ -29,6 +31,8 @@ var findnodeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		en := mustEnodeArg(args)
+
+		discover.SetResponseTimeout(time.Duration(int32(respTimeout)) * time.Millisecond)
 
 		u := mustUdp()
 
@@ -45,6 +49,7 @@ var findnodeCmd = &cobra.Command{
 
 func init() {
 	findnodeCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
+	findnodeCmd.PersistentFlags().IntVarP(&respTimeout, "resptimeout", "t", 500, "milliseconds for devp2p response timeout allowance")
 	rootCmd.AddCommand(findnodeCmd)
 
 	// Here you will define your flags and configuration settings.

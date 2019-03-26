@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/etclabscore/dp2p/discover"
 	"log"
 	"net"
 	"time"
@@ -32,6 +33,8 @@ var pingCmd = &cobra.Command{
 
 		en := mustEnodeArg(args)
 
+		discover.SetResponseTimeout(time.Duration(int32(respTimeout)) * time.Millisecond)
+
 		u := mustUdp()
 
 		tstart := time.Now()
@@ -47,6 +50,7 @@ var pingCmd = &cobra.Command{
 
 func init() {
 	pingCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
+	pingCmd.PersistentFlags().IntVarP(&respTimeout, "resptimeout", "t", 500, "milliseconds for devp2p response timeout allowance")
 	rootCmd.AddCommand(pingCmd)
 
 	// Here you will define your flags and configuration settings.

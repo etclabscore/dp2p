@@ -45,9 +45,12 @@ var (
 	errClosed           = errors.New("socket closed")
 )
 
+var (
+	respTimeout    = 500 * time.Millisecond
+)
+
 // Timeouts
 const (
-	respTimeout    = 500 * time.Millisecond
 	expiration     = 20 * time.Second
 	bondExpiration = 24 * time.Hour
 
@@ -118,6 +121,10 @@ type (
 		TCP uint16 // for RLPx protocol
 	}
 )
+
+func SetResponseTimeout(t time.Duration) {
+	respTimeout = t
+}
 
 func makeEndpoint(addr *net.UDPAddr, tcpPort uint16) rpcEndpoint {
 	ip := net.IP{}

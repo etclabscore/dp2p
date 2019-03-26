@@ -10,6 +10,12 @@ import (
 	"os"
 )
 
+var (
+	connectTimeout int
+	respTimeout int
+	listenAddr string
+)
+
 func mustEnodeArg(args []string) *enode.Node {
 	if len(args) == 0 {
 		log.Println("need enode as first argument")
