@@ -85,11 +85,9 @@ var addPeerCmd = &cobra.Command{
 							select {
 							case err := <-errc:
 								if err != nil {
-									resCh <- 1
 									return err
 								}
 							case <-timeout.C:
-								resCh <- 1
 								return p2p.DiscReadTimeout
 							}
 						}
