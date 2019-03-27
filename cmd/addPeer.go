@@ -16,6 +16,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/params"
 	"log"
 	"os"
 	"time"
@@ -59,8 +61,43 @@ var addPeerCmd = &cobra.Command{
 					log.Println(peer.String())
 					log.Println(spew.Sdump(peer.Info()))
 
-					// eth/handler.go#handle -> peer.Handshake(network,td, head, genesis)
+					if statusProto {
+						log.Println("attempting status proto exchange")
 
+						// Send out own handshake in a new thread
+						errc := make(chan error, 2)
+						var status statusData
+						go func() {
+							errc <- p2p.Send(ws, eth.StatusMsg, &statusData{
+								ProtocolVersion: uint32(eth.ProtocolVersions[0]),
+								NetworkId:       params.MainnetChainConfig.ChainID.Uint64(),
+								TD:              core.DefaultGenesisBlock().Difficulty,
+								CurrentBlock:    params.MainnetGenesisHash,
+								GenesisBlock:    params.MainnetGenesisHash,
+							})
+						}()
+						go func() {
+							errc <- readStatus(ws, &status)
+						}()
+						timeout := time.NewTimer(time.Second * 2)
+						defer timeout.Stop()
+						for i := 0; i < 2; i++ {
+							select {
+							case err := <-errc:
+								if err != nil {
+									resCh <- 1
+									return err
+								}
+							case <-timeout.C:
+								resCh <- 1
+								return p2p.DiscReadTimeout
+							}
+						}
+						log.Println(spew.Sdump(status))
+
+					} else {
+						log.Println("status proto exchange not enabled")
+					}
 					peer.Disconnect(p2p.DiscQuitting)
 					resCh <- 0
 					return nil
@@ -88,6 +125,7 @@ var addPeerCmd = &cobra.Command{
 					if ev.Type == p2p.PeerEventTypeAdd {
 						// log.Println(ev)
 					}
+					log.Println(ev)
 				case err := <-pSub.Err():
 					log.Println("peer event sub error", err)
 					resCh <- 1
@@ -119,6 +157,7 @@ var addPeerCmd = &cobra.Command{
 func init() {
 	addPeerCmd.PersistentFlags().IntVarP(&connectTimeout, "timeout", "t", 30, "time in seconds to wait for node to dial a connection")
 	addPeerCmd.PersistentFlags().StringVarP(&listenAddr, "listenaddr", "a", ":30301", "address:port to listen at")
+	addPeerCmd.PersistentFlags().BoolVarP(&statusProto, "statusproto", "s", true,"if adding peer succeeds, attempt to exchange status messages")
 
 	rootCmd.AddCommand(addPeerCmd)
 
