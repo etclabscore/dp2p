@@ -120,16 +120,23 @@ var addPeerCmd = &cobra.Command{
 			for {
 				select {
 				case ev := <-pEventCh:
-					if ev.Type == p2p.PeerEventTypeAdd {
-						// log.Println(ev)
-					}
 					log.Println(ev)
+					if ev.Type == p2p.PeerEventTypeAdd {
+
+					}
+					if ev.Type == p2p.PeerEventTypeDrop {
+						log.Println("peer dropped")
+						resCh <- 0
+						return
+					}
 				case err := <-pSub.Err():
 					log.Println("peer event sub error", err)
 					resCh <- 1
+					return
 				case <-t.C:
 					log.Println("ticker expired")
 					resCh <- 1
+					return
 				case <-quitCh:
 					return
 				}
@@ -145,7 +152,7 @@ var addPeerCmd = &cobra.Command{
 				} else {
 					fmt.Println("FAIL")
 				}
-				quitCh <- true
+				//quitCh <- true
 				os.Exit(c)
 			}
 		}
