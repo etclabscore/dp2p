@@ -134,7 +134,7 @@ var addPeerCmd = &cobra.Command{
 					resCh <- 1
 					return
 				case <-t.C:
-					log.Println("ticker expired")
+					log.Println("ticker expired", time.Now())
 					resCh <- 1
 					return
 				case <-quitCh:
