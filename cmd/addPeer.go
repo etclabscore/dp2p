@@ -30,6 +30,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var spInProg bool
+
 // addPeerCmd represents the addPeer command
 var addPeerCmd = &cobra.Command{
 	Aliases: []string{"addPeer"},
@@ -62,15 +64,18 @@ var addPeerCmd = &cobra.Command{
 					log.Println(spew.Sdump(peer.Info()))
 
 					if statusProto {
+
 						log.Println("attempting status proto exchange")
 
 						// Send out own handshake in a new thread
 						errc := make(chan error, 2)
+						spInProg = true
+						defer func() { spInProg = false }()
 						var status statusData
 						go func() {
 							errc <- p2p.Send(ws, eth.StatusMsg, &statusData{
 								ProtocolVersion: uint32(eth.ProtocolVersions[0]),
-								NetworkId:       params.MainnetChainConfig.ChainID.Uint64(),
+								NetworkId:       1,
 								TD:              core.DefaultGenesisBlock().Difficulty,
 								CurrentBlock:    params.MainnetGenesisHash,
 								GenesisBlock:    params.MainnetGenesisHash,
@@ -126,7 +131,7 @@ var addPeerCmd = &cobra.Command{
 					}
 					if ev.Type == p2p.PeerEventTypeDrop {
 						log.Println("peer dropped")
-						resCh <- 0
+						resCh <- 1
 						return
 					}
 				case err := <-pSub.Err():
@@ -134,7 +139,7 @@ var addPeerCmd = &cobra.Command{
 					resCh <- 1
 					return
 				case <-t.C:
-					log.Println("ticker expired", time.Now())
+					log.Println("ticker expired", time.Now().Format(time.RFC3339))
 					resCh <- 1
 					return
 				case <-quitCh:
@@ -153,6 +158,7 @@ var addPeerCmd = &cobra.Command{
 					fmt.Println("FAIL")
 				}
 				//quitCh <- true
+				for(spInProg) {}
 				os.Exit(c)
 			}
 		}
