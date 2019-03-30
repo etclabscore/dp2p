@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
 	"log"
 	"os"
@@ -30,7 +31,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var spInProg bool
+var spInProg, hrInProg bool
 
 // addPeerCmd represents the addPeer command
 var addPeerCmd = &cobra.Command{
@@ -81,26 +82,85 @@ var addPeerCmd = &cobra.Command{
 								GenesisBlock:    params.MainnetGenesisHash,
 							})
 						}()
+
 						go func() {
 							errc <- readStatus(ws, &status)
 						}()
-						timeout := time.NewTimer(time.Second * 2)
+						timeout := time.NewTimer(time.Second * 4)
 						defer timeout.Stop()
-						for i := 0; i < 2; i++ {
+						for i := 0; i < 4; i++ {
 							select {
 							case err := <-errc:
-								if err != nil {
+								if err != nil && err != errPar {
+									log.Println("err read status", err)
+									resCh <- 1
 									return err
+								} else if err == errPar {
+									log.Println("got errPar, doing nothing")
 								}
 							case <-timeout.C:
+								resCh <-1
 								return p2p.DiscReadTimeout
 							}
 						}
-						log.Println(spew.Sdump(status))
+						spInProg = false
 
 					} else {
 						log.Println("status proto exchange not enabled")
 					}
+
+					if true {
+						log.Println("attempting header req")
+						errc := make(chan error, 2)
+						hrInProg = true
+						defer func() {hrInProg = false}()
+						var headers []*types.Header
+						go func() {
+							errc <- p2p.Send(ws, eth.GetBlockHeadersMsg, &getBlockHeadersData{
+								Origin: uint64(1920000),
+								Amount: uint64(1),
+								Skip: uint64(0),
+								Reverse: false})
+						}()
+						go func() {
+							errc <- readBlockHeadersMsg(ws, headers)
+						}()
+						timeout := time.NewTimer(time.Second * 15)
+						defer timeout.Stop()
+						for i := 0; i < 8; i++ {
+							select {
+							case err := <-errc:
+								if err != nil && err != errPar {
+									log.Println("err read headers", err)
+									resCh <- 1
+									return err
+									// why tf this isn't working... FIXME
+								} else if headers != nil || len(headers) == 1 {
+									resCh <- 0
+									return nil
+								} else if err == errPar {
+									log.Println("got errPar, doing nothing")
+								} else {
+									log.Println("handled non err errc out")
+									//log.Println(spew.Sdump(headers))
+								}
+							case <-timeout.C:
+								log.Println("err read headers: timeout")
+								if headers == nil {
+									resCh <-1
+									return p2p.DiscReadTimeout
+								} else {
+									resCh <-0
+									return nil
+								}
+
+							}
+						}
+						hrInProg = false
+					} else {
+						log.Println("header req exhange not enabled")
+					}
+
 					peer.Disconnect(p2p.DiscQuitting)
 					resCh <- 0
 					return nil
